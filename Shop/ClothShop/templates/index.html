@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная</title>
+    {% bootstrap_css %}
+</head>
+<body>
+{% block content %}
+    <h1>Список продукции</h1>
+    </br>
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                      {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
+                      {% else %}
+                        <img src="{% static 'images/clear.png' %}" alt="Default Image" class="card-img-top">
+            {% endif %}
+                        <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">Price: ${{ product.price }}</p>
+                        {% if username %}
+                            <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">Просмотр</a>
+                            <a href="{% url 'edit_product' product.id %}" class="btn btn-primary">Редактировать</a>
+
+                            <form method="post" action="{% url 'delete_product' product.id %}" class="deleteB">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </form>
+                         {% else %}
+                            <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">Просмотр</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+  <ul class="pagination justify-content-center">
+        {% for i in products.paginator.page_range %}
+            <li class="page-item {% if i == comments.number %}active{% endif %}">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% endblock %}
+
+    {% bootstrap_javascript %}
+</body>
+</html>
